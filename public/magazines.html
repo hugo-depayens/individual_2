@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все журналы - e-magazine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        body, header, nav, footer, .card, .modal {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        manrope: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { DEFAULT: '#007BFF', hover: '#0056b3' },
+                        secondary: { DEFAULT: '#6c757d', hover: '#5a6268' },
+                        background: '#F9FAFB',
+                        card: '#FFFFFF',
+                        text: '#1F2937',
+                        'text-muted': '#6B7280',
+                        border: '#E5E7EB',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        dark: {
+                            primary: { DEFAULT: '#38BDF8', hover: '#0EA5E9' },
+                            secondary: { DEFAULT: '#9CA3AF', hover: '#6B7280' },
+                            background: '#111827',
+                            card: '#1F2937',
+                            text: '#F3F4F6',
+                            'text-muted': '#9CA3AF',
+                            border: '#374151',
+                            success: '#34D399',
+                            danger: '#F87171',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background dark:bg-dark-background text-text dark:text-dark-text antialiased min-h-screen grid grid-rows-[auto_1fr_auto]">
+
+<!-- Шапка сайта -->
+<header class="bg-card dark:bg-dark-card shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="font-manrope text-2xl font-bold text-primary dark:text-dark-primary">
+                    e-magazine
+                </a>
+            </div>
+            <nav id="main-nav" class="hidden md:flex space-x-6 items-center">
+                <a href="index.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Главная</a>
+                <a href="magazines.html" class="font-medium text-primary dark:text-dark-primary">Журналы</a>
+                <!-- Ссылки Вход/Регистрация или Профиль/Выход будут добавлены JS -->
+            </nav>
+            <div class="flex items-center">
+                <button id="theme-toggle" type="button" class="ml-4 p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-dark-primary">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Центральный круг (ядро солнца) -->
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+
+                        <!-- Лучи -->
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 2v2m0 16v2m10-10h-2M4 12H2
+           M17.66 6.34l-1.41 1.41M6.34 17.66l-1.41 1.41
+           M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 7.75" />
+                    </svg>
+
+                </button>
+                <div class="md:hidden ml-2">
+                    <button id="mobile-menu-button" type="button" class="p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Главная</a>
+            <a href="magazines.html" class="block px-3 py-2 rounded-md text-base font-medium text-primary dark:text-dark-primary bg-gray-100 dark:bg-gray-700">Журналы</a>
+            <!-- Ссылки Вход/Регистрация или Профиль/Выход будут добавлены JS -->
+        </div>
+    </div>
+</header>
+
+<!-- Основной контент -->
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="font-manrope text-3xl sm:text-4xl font-bold text-text dark:text-dark-text">
+            Все доступные журналы
+        </h1>
+        <!-- Можно добавить фильтры или сортировку здесь -->
+    </div>
+
+    <div id="magazines-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+        <!-- Карточки журналов будут вставлены сюда через JavaScript -->
+        <p id="loading-magazines" class="col-span-full text-center text-text-muted dark:text-dark-text-muted py-10 text-lg">
+            Загрузка журналов...
+        </p>
+    </div>
+</main>
+
+<footer class="bg-gray-100 dark:bg-gray-800 border-t border-border dark:border-dark-border mt-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-text-muted dark:text-dark-text-muted">
+        <p>© <span id="current-year"></span> e-magazine. Все права защищены.</p>
+    </div>
+</footer>
+
+<script>
+    // --- Логика переключения темы ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+    if (localStorage.getItem('color-theme') === 'dark' ||
+        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('dark');
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        if (localStorage.getItem('color-theme')) {
+            if (localStorage.getItem('color-theme') === 'light') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            }
+        } else {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        }
+    });
+
+    // --- Логика мобильного меню ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // --- Обновление навигации в зависимости от статуса авторизации ---
+    function updateNavigation() {
+        const authToken = localStorage.getItem('authToken');
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const mainNav = document.getElementById('main-nav');
+        const mobileNavLinks = document.getElementById('mobile-nav-links');
+
+        // Очищаем предыдущие ссылки для Входа/Регистрации или Профиля/Выхода
+        const existingAuthLinks = mainNav.querySelectorAll('.auth-link');
+        existingAuthLinks.forEach(link => link.remove());
+        const existingMobileAuthLinks = mobileNavLinks.querySelectorAll('.auth-link-mobile');
+        existingMobileAuthLinks.forEach(link => link.remove());
+
+        if (authToken && userData) {
+            // Пользователь авторизован
+            mainNav.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Профиль (${userData.username})</a>
+                    <button id="logoutButton" class="auth-link px-4 py-2 text-sm font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover rounded-md">Выход</button>
+                `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Профиль (${userData.username})</a>
+                    <button id="logoutButtonMobile" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover">Выход</button>
+                `);
+
+            const logoutButton = document.getElementById('logoutButton');
+            if(logoutButton) logoutButton.addEventListener('click', logout);
+            const logoutButtonMobile = document.getElementById('logoutButtonMobile');
+            if(logoutButtonMobile) logoutButtonMobile.addEventListener('click', logout);
+
+        } else {
+            // Пользователь не авторизован
+            mainNav.insertAdjacentHTML('beforeend', `
+                    <a href="login.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Вход</a>
+                    <a href="register.html" class="auth-link px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">Регистрация</a>
+                `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                    <a href="login.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Вход</a>
+                    <a href="register.html" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover">Регистрация</a>
+                `);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        updateNavigation(); // Обновить навигацию
+        window.location.href = 'index.html'; // Перенаправить на главную
+    }
+
+    // --- Загрузка списка журналов ---
+    async function loadMagazines() {
+        const grid = document.getElementById('magazines-grid');
+        const loadingMessage = document.getElementById('loading-magazines');
+        const API_URL = '/api/magazines';
+
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const magazines = await response.json();
+
+            if (loadingMessage) loadingMessage.remove();
+            grid.innerHTML = ''; // Очищаем контейнер
+
+            if (magazines && magazines.length > 0) {
+                magazines.forEach(magazine => {
+                    const coverImage = magazine.coverImage || `https://via.placeholder.com/400x250/${Math.floor(Math.random()*16777215).toString(16)}/${Math.floor(Math.random()*16777215).toString(16)}?text=${encodeURIComponent(magazine.title.substring(0,15))}`;
+                    const description = magazine.description ? (magazine.description.length > 120 ? magazine.description.substring(0, 117) + '...' : magazine.description) : 'Краткое описание отсутствует.';
+                    const token = localStorage.getItem('token')
+
+                    const cardHTML = `
+                            <div class="card bg-card dark:bg-dark-card rounded-xl shadow-lg overflow-hidden flex flex-col transform hover:shadow-2xl transition-shadow duration-300">
+                                <a href="magazine-detail.html?id=${magazine.id}" class="block">
+                                    <img src="${coverImage}" alt="Обложка ${magazine.title}" class="w-full h-56 object-cover">
+                                </a>
+                                <div class="p-5 flex flex-col flex-grow">
+                                    <a href="magazine-detail.html?id=${magazine.id}" class="block">
+                                        <h3 class="font-manrope text-xl font-semibold mb-2 text-text dark:text-dark-text hover:text-primary dark:hover:text-dark-primary transition-colors">
+                                            ${magazine.title}
+                                        </h3>
+                                    </a>
+                                    <p class="text-text-muted dark:text-dark-text-muted text-sm mb-4 flex-grow">
+                                        ${description}
+                                    </p>
+                                    <div class="mt-auto pt-4 border-t border-border dark:border-dark-border flex justify-between items-center">
+                                        <span class="text-xl font-bold text-primary dark:text-dark-primary">${parseFloat(magazine.price).toFixed(2)}$</span>
+                                        <a href="${!token ?  `login.html` : `magazine-detail.html?id=${magazine.id}`}"
+                                           class="px-5 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md transition-colors">
+                                            Подробнее
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    grid.insertAdjacentHTML('beforeend', cardHTML);
+                });
+            } else {
+                grid.innerHTML = '<p class="col-span-full text-center text-text-muted dark:text-dark-text-muted py-10 text-lg">Пока нет доступных журналов.</p>';
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки журналов:', error);
+            if (loadingMessage) loadingMessage.remove();
+            grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-10 text-lg">Не удалось загрузить журналы. ${error.message}</p>`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavigation();
+        loadMagazines();
+    });
+</script>
+</body>
+</html>

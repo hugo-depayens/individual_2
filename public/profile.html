@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - e-magazine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        body, header, nav, footer, .card, .modal, .subscription-item {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .status-badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.85em;
+            font-weight: 600;
+            border-radius: 0.375rem; /* rounded-md */
+            text-transform: capitalize;
+        }
+        .status-active { background-color: #10B981; color: white; } /* Tailwind green-500 */
+        .dark .status-active { background-color: #34D399; } /* Tailwind green-400 */
+        .status-pending { background-color: #F59E0B; color: white; } /* Tailwind amber-500 */
+        .dark .status-pending { background-color: #FBBF24; } /* Tailwind amber-400 */
+        .status-expired { background-color: #6B7280; color: white; } /* Tailwind gray-500 */
+        .dark .status-expired { background-color: #9CA3AF; } /* Tailwind gray-400 */
+        .status-cancelled { background-color: #EF4444; color: white; } /* Tailwind red-500 */
+        .dark .status-cancelled { background-color: #F87171; } /* Tailwind red-400 */
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        manrope: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { DEFAULT: '#007BFF', hover: '#0056b3' },
+                        secondary: { DEFAULT: '#6c757d', hover: '#5a6268' },
+                        background: '#F9FAFB',
+                        card: '#FFFFFF',
+                        text: '#1F2937',
+                        'text-muted': '#6B7280',
+                        border: '#E5E7EB',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B', // amber-500
+                        dark: {
+                            primary: { DEFAULT: '#38BDF8', hover: '#0EA5E9' },
+                            secondary: { DEFAULT: '#9CA3AF', hover: '#6B7280' },
+                            background: '#111827',
+                            card: '#1F2937',
+                            text: '#F3F4F6',
+                            'text-muted': '#9CA3AF',
+                            border: '#374151',
+                            success: '#34D399',
+                            danger: '#F87171',
+                            warning: '#FBBF24', // amber-400
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background dark:bg-dark-background text-text dark:text-dark-text antialiased min-h-screen grid grid-rows-[auto_1fr_auto]">
+
+<!-- Шапка сайта -->
+<header class="bg-card dark:bg-dark-card shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="font-manrope text-2xl font-bold text-primary dark:text-dark-primary">
+                    e-magazine
+                </a>
+            </div>
+            <nav id="main-nav" class="hidden md:flex space-x-6 items-center">
+                <a href="index.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Главная</a>
+                <a href="magazines.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Журналы</a>
+            </nav>
+            <div class="flex items-center">
+                <button id="theme-toggle" type="button" class="ml-4 p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-dark-primary">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Центральный круг (ядро солнца) -->
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+
+                        <!-- Лучи -->
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 2v2m0 16v2m10-10h-2M4 12H2
+           M17.66 6.34l-1.41 1.41M6.34 17.66l-1.41 1.41
+           M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 7.75" />
+                    </svg>
+
+                </button>
+                <div class="md:hidden ml-2">
+                    <button id="mobile-menu-button" type="button" class="p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Главная</a>
+            <a href="magazines.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Журналы</a>
+        </div>
+    </div>
+</header>
+
+<!-- Основной контент -->
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="loading-indicator" class="text-center py-20">
+        <p class="text-xl text-text-muted dark:text-dark-text-muted">Загрузка данных профиля...</p>
+    </div>
+
+    <div id="profile-content" class="hidden">
+        <h1 class="font-manrope text-3xl sm:text-4xl font-bold mb-8 text-text dark:text-dark-text">
+            Личный кабинет
+        </h1>
+
+        <!-- Информация о пользователе -->
+        <section class="mb-10 bg-card dark:bg-dark-card p-6 rounded-lg shadow-md">
+            <h2 class="font-manrope text-2xl font-semibold mb-4 text-text dark:text-dark-text">Ваши данные</h2>
+            <div class="space-y-3">
+                <p><strong class="font-medium">Имя пользователя:</strong> <span id="user-username" class="text-text-muted dark:text-dark-text-muted"></span></p>
+                <p><strong class="font-medium">Email:</strong> <span id="user-email" class="text-text-muted dark:text-dark-text-muted"></span></p>
+                <p><strong class="font-medium">Роль:</strong> <span id="user-role" class="text-text-muted dark:text-dark-text-muted capitalize"></span></p>
+                <p><strong class="font-medium">Дата регистрации:</strong> <span id="user-created-at" class="text-text-muted dark:text-dark-text-muted"></span></p>
+            </div>
+            <div id="admin-link-container" class="mt-4"></div>
+        </section>
+
+        <!-- Список подписок -->
+        <section>
+            <h2 class="font-manrope text-2xl font-semibold mb-6 text-text dark:text-dark-text">Ваши подписки</h2>
+            <div id="subscriptions-list" class="space-y-6">
+                <!-- Подписки будут вставлены сюда -->
+                <p id="loading-subscriptions" class="text-text-muted dark:text-dark-text-muted">Загрузка подписок...</p>
+            </div>
+        </section>
+        <div id="payment-message" class="mt-6 p-3 rounded-md text-sm hidden"></div>
+    </div>
+
+    <div id="auth-required-message" class="hidden text-center py-20">
+        <p class="text-xl text-danger dark:text-dark-danger mb-4">Доступ запрещен.</p>
+        <p class="text-text-muted dark:text-dark-text-muted">Пожалуйста, <a href="login.html?redirect=profile.html" class="text-primary dark:text-dark-primary hover:underline">войдите</a>, чтобы просмотреть эту страницу.</p>
+    </div>
+</main>
+
+<footer class="bg-gray-100 dark:bg-gray-800 border-t border-border dark:border-dark-border mt-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-text-muted dark:text-dark-text-muted">
+        <p>© <span id="current-year"></span> e-magazine. Все права защищены.</p>
+    </div>
+</footer>
+
+<script>
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const profileContentEl = document.getElementById('profile-content');
+    const authRequiredMessageEl = document.getElementById('auth-required-message');
+
+    const userUsernameEl = document.getElementById('user-username');
+    const userEmailEl = document.getElementById('user-email');
+    const userRoleEl = document.getElementById('user-role');
+    const userCreatedAtEl = document.getElementById('user-created-at');
+    const adminLinkContainerEl = document.getElementById('admin-link-container');
+
+    const subscriptionsListEl = document.getElementById('subscriptions-list');
+    const loadingSubscriptionsMsg = document.getElementById('loading-subscriptions');
+    const paymentMessageEl = document.getElementById('payment-message');
+
+    let authToken = localStorage.getItem('authToken');
+    let userData = JSON.parse(localStorage.getItem('userData'));
+
+    // --- Логика переключения темы и мобильного меню (как на других страницах) ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    /* ... (остальной код для темы и мобильного меню как на других страницах) ... */
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+    themeToggleBtn.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // --- Обновление навигации ---
+    function updateNavigation() { /* ... (код как в magazines.html) ... */
+        const mainNav = document.getElementById('main-nav');
+        const mobileNavLinks = document.getElementById('mobile-nav-links');
+        const existingAuthLinks = mainNav.querySelectorAll('.auth-link');
+        existingAuthLinks.forEach(link => link.remove());
+        const existingMobileAuthLinks = mobileNavLinks.querySelectorAll('.auth-link-mobile');
+        existingMobileAuthLinks.forEach(link => link.remove());
+
+        if (authToken && userData) {
+            mainNav.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link font-medium text-primary dark:text-dark-primary">Профиль (${userData.username})</a>
+                    <button id="logoutButton" class="auth-link px-4 py-2 text-sm font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover rounded-md">Выход</button>
+                `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-primary dark:text-dark-primary bg-gray-100 dark:bg-gray-700">Профиль (${userData.username})</a>
+                    <button id="logoutButtonMobile" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover">Выход</button>
+                `);
+            const logoutButton = document.getElementById('logoutButton');
+            if(logoutButton) logoutButton.addEventListener('click', logout);
+            const logoutButtonMobile = document.getElementById('logoutButtonMobile');
+            if(logoutButtonMobile) logoutButtonMobile.addEventListener('click', logout);
+        } else { // Не авторизован, но на странице профиля - это не должно случиться из-за проверки ниже
+            mainNav.insertAdjacentHTML('beforeend', `
+                    <a href="login.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Вход</a>
+                    <a href="register.html" class="auth-link px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">Регистрация</a>
+                `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                    <a href="login.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Вход</a>
+                    <a href="register.html" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover">Регистрация</a>
+                `);
+        }
+    }
+    function logout() { /* ... (код как в magazines.html) ... */
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        authToken = null; userData = null;
+        window.location.href = 'index.html';
+    }
+
+    // --- Загрузка данных профиля ---
+    async function loadProfileData() {
+        if (!authToken || !userData) {
+            loadingIndicator.classList.add('hidden');
+            authRequiredMessageEl.classList.remove('hidden');
+            return;
+        }
+
+        profileContentEl.classList.remove('hidden');
+        loadingIndicator.classList.add('hidden');
+
+        // Отображаем данные пользователя из localStorage (можно дополнить запросом /api/users/me)
+        userUsernameEl.textContent = userData.username;
+        userEmailEl.textContent = userData.email;
+        userRoleEl.textContent = userData.role;
+
+        // Для даты регистрации нужен запрос к /api/users/me, так как в токене ее нет
+        // Пока оставим заглушку или запросим
+        try {
+            const response = await fetch('/api/users/me', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if (response.ok) {
+                const fullUserData = await response.json();
+                const sec = new Date();
+                userCreatedAtEl.textContent = new Date(sec.getTime() - fullUserData.user.iat).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
+                // Обновим userData на всякий случай, если там есть более свежая информация
+                localStorage.setItem('userData', JSON.stringify(fullUserData.user));
+                userData = fullUserData.user; // Обновляем глобальную переменную
+                userRoleEl.textContent = userData.role; // Обновляем роль, если она изменилась
+            } else {
+                userCreatedAtEl.textContent = 'Не удалось загрузить';
+            }
+        } catch (e) {
+            userCreatedAtEl.textContent = 'Ошибка загрузки';
+        }
+
+
+        if (userData.role === 'admin') {
+            adminLinkContainerEl.innerHTML = `
+                    <a href="admin.html" class="inline-block mt-3 px-5 py-2 text-sm font-medium text-white bg-red-600 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 rounded-md shadow-sm">
+                        Перейти в Панель Администратора
+                    </a>`;
+        }
+
+        loadSubscriptions();
+    }
+
+    // --- Загрузка подписок пользователя ---
+    async function loadSubscriptions() {
+        subscriptionsListEl.innerHTML = `<p id="loading-subscriptions" class="text-text-muted dark:text-dark-text-muted">Загрузка подписок...</p>`;
+        hidePaymentMessage();
+
+        try {
+            const response = await fetch('/api/users/me/subscriptions', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if (!response.ok) {
+                throw new Error('Не удалось загрузить подписки.');
+            }
+            const subscriptions = await response.json();
+
+            const loadingMsg = document.getElementById('loading-subscriptions');
+            if (loadingMsg) loadingMsg.remove();
+
+            if (subscriptions && subscriptions.length > 0) {
+                subscriptionsListEl.innerHTML = ''; // Очищаем
+                subscriptions.forEach(sub => {
+                    const subEl = document.createElement('div');
+                    subEl.className = 'subscription-item bg-card dark:bg-dark-card p-4 sm:p-6 rounded-lg shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between';
+
+                    const coverImage = sub.magazineCover || `https://via.placeholder.com/100x120/E0E0E0/B0B0B0?text=${encodeURIComponent(sub.magazineTitle.substring(0,10))}`;
+
+                    let actionsHtml = '';
+                    if (sub.status === 'pending') {
+                        actionsHtml = `<button data-subscription-id="${sub.id}" data-magazine-id="${sub.magazineId}" class="pay-subscription-btn mt-3 sm:mt-0 px-4 py-2 text-sm font-medium text-white bg-warning dark:bg-dark-warning hover:opacity-80 rounded-md">Оплатить</button>`;
+                    } else if (sub.status === 'active') {
+                        actionsHtml = `<a href="magazine-detail.html?id=${sub.magazineId}" class="mt-3 sm:mt-0 inline-block px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">Читать журнал</a>`;
+                    }
+
+                    subEl.innerHTML = `
+                            <div class="flex items-center mb-3 sm:mb-0">
+                                <img src="${coverImage}" alt="${sub.magazineTitle}" class="w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-md mr-4">
+                                <div>
+                                    <h3 class="font-manrope text-lg font-semibold text-text dark:text-dark-text">${sub.magazineTitle}</h3>
+                                    <p class="text-sm text-text-muted dark:text-dark-text-muted">
+                                        Статус: <span class="status-badge status-${sub.status}">${sub.status}</span>
+                                    </p>
+                                    <p class="text-xs text-text-muted dark:text-dark-text-muted">
+                                        Действует с ${new Date(sub.startDate).toLocaleDateString('ru-RU')} по ${new Date(sub.endDate).toLocaleDateString('ru-RU')}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="sm:ml-4 flex-shrink-0">
+                                ${actionsHtml}
+                            </div>
+                        `;
+                    subscriptionsListEl.appendChild(subEl);
+                });
+
+                // Добавляем обработчики для кнопок "Оплатить"
+                document.querySelectorAll('.pay-subscription-btn').forEach(button => {
+                    button.addEventListener('click', handlePendingPayment);
+                });
+
+            } else {
+                subscriptionsListEl.innerHTML = '<p class="text-text-muted dark:text-dark-text-muted">У вас пока нет оформленных подписок.</p>';
+            }
+
+        } catch (error) {
+            console.error("Ошибка загрузки подписок:", error);
+            subscriptionsListEl.innerHTML = `<p class="text-danger dark:text-dark-danger">${error.message}</p>`;
+        }
+    }
+
+    // --- Обработка оплаты ожидающей подписки ---
+    async function handlePendingPayment(event) {
+        const button = event.target;
+        const subscriptionId = button.dataset.subscriptionId;
+        // const magazineId = button.dataset.magazineId; // Не нужен для оплаты, но может быть полезен для получения цены
+
+        button.disabled = true;
+        button.textContent = 'Обработка...';
+        hidePaymentMessage();
+
+        try {
+            // Для оплаты нам нужен ID транзакции. API подписок должен его вернуть при создании,
+            // или нам нужен отдельный эндпоинт для получения транзакции по subscriptionId.
+            // Предположим, что /api/transactions/bysubscription/:subscriptionId вернет последнюю pending транзакцию
+            let transactionResponse = await fetch(`/api/transactions/bysubscription/${subscriptionId}`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if (!transactionResponse.ok) throw new Error('Не удалось найти транзакцию для оплаты.');
+
+            const transactions = await transactionResponse.json();
+            const pendingTransaction = transactions.find(t => t.status === 'pending');
+
+            if (!pendingTransaction) throw new Error('Нет ожидающей транзакции для этой подписки.');
+
+            const transactionId = pendingTransaction.id;
+
+            // Симулируем оплату
+            const paymentResponse = await fetch('/api/subscriptions/pay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ subscriptionId: parseInt(subscriptionId), transactionId })
+            });
+            const paymentData = await paymentResponse.json();
+
+            if (!paymentResponse.ok) {
+                throw new Error(paymentData.message || 'Ошибка симуляции оплаты.');
+            }
+
+            showPaymentMessage('Оплата прошла успешно! Подписка активирована.', 'success');
+            loadSubscriptions(); // Перезагружаем список подписок
+
+        } catch (error) {
+            console.error("Ошибка оплаты подписки:", error);
+            showPaymentMessage(error.message, 'danger');
+            button.disabled = false;
+            button.textContent = 'Оплатить';
+        }
+    }
+
+    function showPaymentMessage(message, type = 'info') {
+        paymentMessageEl.textContent = message;
+        paymentMessageEl.className = 'mt-6 p-3 rounded-md text-sm'; // Сброс
+        if (type === 'success') paymentMessageEl.classList.add('bg-success', 'dark:bg-dark-success', 'text-green-700', 'dark:text-green-200');
+        else if (type === 'danger') paymentMessageEl.classList.add('bg-danger', 'dark:bg-dark-danger', 'text-red-700', 'dark:text-red-200');
+        else paymentMessageEl.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-200');
+        paymentMessageEl.classList.remove('hidden');
+    }
+    function hidePaymentMessage() {
+        paymentMessageEl.classList.add('hidden');
+    }
+
+    // --- Инициализация ---
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavigation();
+        loadProfileData();
+    });
+</script>
+</body>
+</html>

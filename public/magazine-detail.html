@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали журнала - e-magazine</title> <!-- Заголовок будет обновлен JS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        body, header, nav, footer, .card, .modal, .article-item {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .prose-custom { /* Для стилизации контента статей, если он будет в HTML */
+            color: inherit;
+        }
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: inherit; }
+        .prose-custom a { color: #007BFF; }
+        .dark .prose-custom a { color: #38BDF8; }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        manrope: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { DEFAULT: '#007BFF', hover: '#0056b3' },
+                        secondary: { DEFAULT: '#6c757d', hover: '#5a6268' },
+                        background: '#F9FAFB',
+                        card: '#FFFFFF',
+                        text: '#1F2937',
+                        'text-muted': '#6B7280',
+                        border: '#E5E7EB',
+                        success: '#10B981',
+                        danger: '#EF4444', // Main red for actions like unsubscribe
+                        'danger-hover': '#D93E32', // Darker red for hover
+                        dark: {
+                            primary: { DEFAULT: '#38BDF8', hover: '#0EA5E9' },
+                            secondary: { DEFAULT: '#9CA3AF', hover: '#6B7280' },
+                            background: '#111827',
+                            card: '#1F2937',
+                            text: '#F3F4F6',
+                            'text-muted': '#9CA3AF',
+                            border: '#374151',
+                            success: '#34D399',
+                            danger: '#F87171', // Lighter red for dark mode
+                            'danger-hover': '#E55B5B', // Slightly different hover for dark
+                        }
+                    },
+                    typography: (theme) => ({ // Для Tailwind Typography плагина, если бы он использовался
+                        DEFAULT: {
+                            css: {
+                                color: theme('colors.text'),
+                                a: {
+                                    color: theme('colors.primary.DEFAULT'),
+                                    '&:hover': {
+                                        color: theme('colors.primary.hover'),
+                                    },
+                                },
+                            },
+                        },
+                        dark: {
+                            css: {
+                                color: theme('colors.dark.text'),
+                                a: {
+                                    color: theme('colors.dark.primary.DEFAULT'),
+                                    '&:hover': {
+                                        color: theme('colors.dark.primary.hover'),
+                                    },
+                                },
+                                // ... другие стили для темной темы
+                            },
+                        }
+                    }),
+                }
+            }
+            // plugins: [require('@tailwindcss/typography')], // Если бы использовался плагин
+        }
+    </script>
+</head>
+<body class="bg-background dark:bg-dark-background text-text dark:text-dark-text antialiased min-h-screen grid grid-rows-[auto_1fr_auto]">
+
+<!-- Шапка сайта -->
+<header class="bg-card dark:bg-dark-card shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="font-manrope text-2xl font-bold text-primary dark:text-dark-primary">
+                    e-magazine
+                </a>
+            </div>
+            <nav id="main-nav" class="hidden md:flex space-x-6 items-center">
+                <a href="index.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Главная</a>
+                <a href="magazines.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Журналы</a>
+            </nav>
+            <div class="flex items-center">
+                <button id="theme-toggle" type="button" class="ml-4 p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-dark-primary">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 2v2m0 16v2m10-10h-2M4 12H2
+           M17.66 6.34l-1.41 1.41M6.34 17.66l-1.41 1.41
+           M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 7.75" />
+                    </svg>
+                </button>
+                <div class="md:hidden ml-2">
+                    <button id="mobile-menu-button" type="button" class="p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Главная</a>
+            <a href="magazines.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Журналы</a>
+        </div>
+    </div>
+</header>
+
+<!-- Основной контент -->
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="loading-indicator" class="text-center py-20">
+        <p class="text-xl text-text-muted dark:text-dark-text-muted">Загрузка информации о журнале...</p>
+    </div>
+
+    <div id="magazine-content" class="hidden">
+        <section class="mb-12">
+            <div class="md:flex md:space-x-8">
+                <div class="md:w-1/3 mb-6 md:mb-0">
+                    <img id="magazine-cover" src="https://via.placeholder.com/400x500/E0E0E0/B0B0B0?text=Обложка" alt="Обложка журнала" class="w-full rounded-lg shadow-xl object-cover">
+                </div>
+                <div class="md:w-2/3">
+                    <h1 id="magazine-title" class="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Название журнала</h1>
+                    <p id="magazine-price" class="text-2xl font-semibold text-primary dark:text-dark-primary mb-6">0.00$ / месяц</p>
+                    <div id="magazine-description" class="prose-custom dark:prose-dark max-w-none text-text-muted dark:text-dark-text-muted mb-6">
+                        <p>Полное описание журнала будет загружено здесь...</p>
+                    </div>
+                    <div id="subscription-actions" class="mt-6">
+                        <!-- Кнопка "Подписаться", "Отписаться" или информация о подписке будет здесь -->
+                    </div>
+                    <div id="action-message" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="articles-section" class="hidden">
+            <h2 class="font-manrope text-2xl sm:text-3xl font-bold mb-6 border-t border-border dark:border-dark-border pt-6">
+                Статьи этого выпуска/журнала
+            </h2>
+            <div id="articles-list" class="space-y-6">
+                <p id="loading-articles" class="text-text-muted dark:text-dark-text-muted">Загрузка статей...</p>
+            </div>
+        </section>
+        <div id="article-detail-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-card dark:bg-dark-card p-6 sm:p-8 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
+                <button id="close-modal-button" class="absolute top-4 right-4 text-text-muted dark:text-dark-text-muted hover:text-danger dark:hover:text-dark-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <h3 id="modal-article-title" class="font-manrope text-2xl font-bold mb-4"></h3>
+                <p class="text-sm text-text-muted dark:text-dark-text-muted mb-1">Опубликовано: <span id="modal-article-date"></span></p>
+                <hr class="my-4 border-border dark:border-dark-border">
+                <div id="modal-article-content" class="prose-custom dark:prose-dark max-w-none"></div>
+            </div>
+        </div>
+    </div>
+    <div id="error-message" class="hidden text-center py-10">
+        <p class="text-xl text-danger dark:text-dark-danger"></p>
+    </div>
+</main>
+
+<footer class="bg-gray-100 dark:bg-gray-800 border-t border-border dark:border-dark-border mt-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-text-muted dark:text-dark-text-muted">
+        <p>© <span id="current-year"></span> e-magazine. Все права защищены.</p>
+    </div>
+</footer>
+
+<script>
+    // --- Общие функции и переменные ---
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const magazineContentEl = document.getElementById('magazine-content');
+    const errorMessageEl = document.getElementById('error-message');
+    const magazineTitleEl = document.getElementById('magazine-title');
+    const magazineCoverEl = document.getElementById('magazine-cover');
+    const magazinePriceEl = document.getElementById('magazine-price');
+    const magazineDescriptionEl = document.getElementById('magazine-description');
+    const subscriptionActionsEl = document.getElementById('subscription-actions');
+    const actionMessageEl = document.getElementById('action-message');
+    const articlesSectionEl = document.getElementById('articles-section');
+    const articlesListEl = document.getElementById('articles-list');
+    const loadingArticlesMsg = document.getElementById('loading-articles');
+
+    const articleDetailModal = document.getElementById('article-detail-modal');
+    const modalArticleTitle = document.getElementById('modal-article-title');
+    const modalArticleDate = document.getElementById('modal-article-date');
+    const modalArticleContent = document.getElementById('modal-article-content');
+    const closeModalButton = document.getElementById('close-modal-button');
+
+    let currentMagazineId = null;
+    let authToken = localStorage.getItem('authToken');
+    let userData = JSON.parse(localStorage.getItem('userData'));
+
+    // --- Логика переключения темы и мобильного меню ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // --- Обновление навигации ---
+    function updateNavigation() {
+        const mainNav = document.getElementById('main-nav');
+        const mobileNavLinks = document.getElementById('mobile-nav-links');
+        const existingAuthLinks = mainNav.querySelectorAll('.auth-link');
+        existingAuthLinks.forEach(link => link.remove());
+        const existingMobileAuthLinks = mobileNavLinks.querySelectorAll('.auth-link-mobile');
+        existingMobileAuthLinks.forEach(link => link.remove());
+
+        if (authToken && userData) {
+            mainNav.insertAdjacentHTML('beforeend', `
+                <a href="profile.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Профиль (${userData.username})</a>
+                <button id="logoutButton" class="auth-link px-4 py-2 text-sm font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover rounded-md">Выход</button>
+            `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                <a href="profile.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Профиль (${userData.username})</a>
+                <button id="logoutButtonMobile" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover">Выход</button>
+            `);
+            const logoutButton = document.getElementById('logoutButton');
+            if(logoutButton) logoutButton.addEventListener('click', logout);
+            const logoutButtonMobile = document.getElementById('logoutButtonMobile');
+            if(logoutButtonMobile) logoutButtonMobile.addEventListener('click', logout);
+        } else {
+            mainNav.insertAdjacentHTML('beforeend', `
+                <a href="login.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Вход</a>
+                <a href="register.html" class="auth-link px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">Регистрация</a>
+            `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                <a href="login.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Вход</a>
+                <a href="register.html" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover">Регистрация</a>
+            `);
+        }
+    }
+    function logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        authToken = null; userData = null;
+        updateNavigation();
+        loadMagazineDetails(currentMagazineId);
+
+        window.location.href = 'index.html';
+    }
+
+    // --- Загрузка деталей журнала ---
+    async function loadMagazineDetails(magazineId) {
+        loadingIndicator.classList.remove('hidden');
+        magazineContentEl.classList.add('hidden');
+        errorMessageEl.classList.add('hidden');
+        articlesSectionEl.classList.add('hidden');
+        articlesListEl.innerHTML = `<p id="loading-articles" class="text-text-muted dark:text-dark-text-muted">Загрузка статей...</p>`;
+
+        try {
+            const headers = {};
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            const response = await fetch(`/api/magazines/${magazineId}`, { headers });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: `Ошибка ${response.status}` }));
+                throw new Error(errorData.message || `Не удалось загрузить журнал (Статус: ${response.status})`);
+            }
+            const magazineData = await response.json();
+
+            document.title = `${magazineData.title} - e-magazine`;
+            magazineTitleEl.textContent = magazineData.title;
+            magazineCoverEl.src = magazineData.coverImage || `https://via.placeholder.com/400x500/A0A0A0/707070?text=${encodeURIComponent(magazineData.title)}`;
+            magazineCoverEl.alt = `Обложка ${magazineData.title}`;
+            magazinePriceEl.textContent = `${parseFloat(magazineData.price).toFixed(2)}$ / месяц`;
+            magazineDescriptionEl.innerHTML = magazineData.description ? magazineData.description.replace(/\n/g, '<br>') : 'Описание отсутствует.';
+
+            updateSubscriptionActions(magazineData);
+
+            if (magazineData.articles && magazineData.articles.length > 0) {
+                articlesSectionEl.classList.remove('hidden');
+                renderArticles(magazineData.articles);
+            } else if (authToken && (userData.role === 'admin' || (magazineData.articles && magazineData.articles.length === 0 && magazineData.message !== "Subscribe to view articles."))) {
+                articlesSectionEl.classList.remove('hidden');
+                articlesListEl.innerHTML = '<p class="text-text-muted dark:text-dark-text-muted">Для этого журнала пока нет статей.</p>';
+            } else if (!authToken || magazineData.message === "Subscribe to view articles.") {
+                articlesSectionEl.classList.remove('hidden');
+                articlesListEl.innerHTML = `<p class="text-text-muted dark:text-dark-text-muted">Статьи доступны после <a href="login.html?redirect=magazine-detail.html?id=${magazineId}" class="text-primary dark:text-dark-primary hover:underline">входа</a> и оформления подписки.</p>`;
+            }
+
+            loadingIndicator.classList.add('hidden');
+            magazineContentEl.classList.remove('hidden');
+
+        } catch (error) {
+            console.error("Ошибка загрузки деталей журнала:", error);
+            loadingIndicator.classList.add('hidden');
+            errorMessageEl.classList.remove('hidden');
+            errorMessageEl.querySelector('p').textContent = error.message;
+        }
+    }
+
+    // --- Обновление кнопок и статуса подписки ---
+    function updateSubscriptionActions(magazineData) {
+        subscriptionActionsEl.innerHTML = '';
+        hideActionMessage();
+
+        if (!authToken || !userData) {
+            subscriptionActionsEl.innerHTML = `
+                <a href="login.html?redirect=magazine-detail.html?id=${currentMagazineId}" class="inline-block px-6 py-3 text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md shadow-sm">
+                    Войдите, чтобы подписаться
+                </a>`;
+            return;
+        }
+
+        // currentUserHasAccess означает, что API вернул статьи, подразумевая подписку или права администратора.
+        // magazineData.message === "Subscribe to view articles." явно указывает на отсутствие подписки для получения статей.
+        const currentUserHasAccessToArticles = !!(magazineData.articles && magazineData.message !== "Subscribe to view articles.");
+
+        if (userData.role === 'admin') {
+            // Администратор может тестировать подписку/отписку.
+            // Если currentUserHasAccessToArticles is true, значит админ либо "подписан" в тестовом режиме, либо видит статьи по праву админа.
+            if (currentUserHasAccessToArticles) {
+                subscriptionActionsEl.innerHTML = `
+                    <p class="text-sm text-green-600 dark:text-green-400 font-semibold">Вы администратор. Доступ к материалам предоставлен.</p>
+                    <p class="text-xs text-text-muted dark:text-dark-text-muted mb-2">Для тестирования механизма отписки, нажмите кнопку ниже (это отменит вашу "тестовую" подписку, если она была оформлена).</p>
+                    <button id="unsubscribe-button" data-magazine-id="${currentMagazineId}" class="mt-2 inline-block px-6 py-3 text-base font-medium text-white bg-danger dark:bg-dark-danger hover:bg-danger-hover dark:hover:bg-dark-danger-hover rounded-md shadow-sm">
+                        Отменить подписку (тест для админа)
+                    </button>`;
+            } else {
+                // Админ не имеет "тестовой" подписки или статьи недоступны по причине "Subscribe to view articles."
+                subscriptionActionsEl.innerHTML = `
+                    <p class="text-sm text-text-muted dark:text-dark-text-muted">Вы администратор. Можете <span class="font-semibold">протестировать</span> подписку.</p>
+                    ${ magazineData.message === "Subscribe to view articles." ? '<p class="text-xs text-yellow-600 dark:text-yellow-400 mb-1">Похоже, для просмотра статей требуется оформление тестовой подписки.</p>' : ''}
+                    <button id="subscribe-button" data-magazine-id="${currentMagazineId}" class="mt-2 inline-block px-6 py-3 text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md shadow-sm">
+                        Оформить подписку (тест для админа)
+                    </button>`;
+            }
+        } else { // Обычный пользователь
+            if (currentUserHasAccessToArticles) {
+                subscriptionActionsEl.innerHTML = `
+                    <p class="text-lg text-green-600 dark:text-green-400 font-semibold mb-2">Вы подписаны на этот журнал!</p>
+                    <button id="unsubscribe-button" data-magazine-id="${currentMagazineId}" class="inline-block px-6 py-3 text-base font-medium text-white bg-danger dark:bg-dark-danger hover:bg-danger-hover dark:hover:bg-dark-danger-hover rounded-md shadow-sm">
+                        Отписаться
+                    </button>`;
+            } else {
+                // Пользователь не подписан
+                subscriptionActionsEl.innerHTML = `
+                    <button id="subscribe-button" data-magazine-id="${currentMagazineId}" class="inline-block px-6 py-3 text-base font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md shadow-sm">
+                        Подписаться за ${parseFloat(magazineData.price).toFixed(2)}$/мес
+                    </button>`;
+            }
+        }
+
+        const subscribeButton = document.getElementById('subscribe-button');
+        if (subscribeButton) {
+            subscribeButton.addEventListener('click', handleSubscription);
+        }
+        const unsubscribeButton = document.getElementById('unsubscribe-button');
+        if (unsubscribeButton) {
+            unsubscribeButton.addEventListener('click', handleUnsubscription);
+        }
+    }
+
+    // --- Обработка подписки ---
+    async function handleSubscription(event) {
+        const magazineId = event.target.dataset.magazineId;
+        const button = event.target;
+        button.disabled = true;
+        button.textContent = 'Обработка...';
+        hideActionMessage();
+
+        try {
+            let response = await fetch('/api/subscriptions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ magazineId: parseInt(magazineId) })
+            });
+            let data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Не удалось инициировать подписку.');
+
+            const subscriptionId = data.subscriptionId;
+            const transactionId = data.transactionId;
+            showActionMessage(`Подписка #${subscriptionId} создана. Сумма ${data.amount}$. Симуляция оплаты...`, 'info');
+
+            response = await fetch('/api/subscriptions/pay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ subscriptionId, transactionId })
+            });
+            data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Ошибка симуляции оплаты.');
+
+            showActionMessage('Оплата прошла успешно! Подписка активирована.', 'success');
+            loadMagazineDetails(currentMagazineId);
+
+        } catch (error) {
+            console.error("Ошибка оформления подписки:", error);
+            showActionMessage(error.message, 'danger');
+            button.disabled = false;
+            // Восстановить текст кнопки
+            if (userData && userData.role === 'admin') {
+                button.textContent = 'Оформить подписку (тест для админа)';
+            } else {
+                const priceText = document.getElementById('magazine-price').textContent.split(' ')[0]; // Получаем цену
+                button.textContent = `Подписаться за ${priceText}/мес`;
+            }
+        }
+    }
+
+    // --- Обработка отписки ---
+    async function handleUnsubscription(event) {
+        const magazineId = event.target.dataset.magazineId;
+        const button = event.target;
+
+        if (!confirm(`Вы уверены, что хотите отписаться от этого журнала?`)) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = 'Отписка...';
+        hideActionMessage();
+
+        try {
+            // Эндпоинт для отписки: DELETE /api/users/unsubscribe/:magazineId
+            const response = await fetch(`/api/users/unsubscribe/${magazineId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: `Ошибка ${response.status} при отписке` }));
+                throw new Error(errorData.message || 'Не удалось отписаться от журнала.');
+            }
+
+            const data = await response.json();
+            showActionMessage(data.message || 'Вы успешно отписались от журнала.', 'success');
+            loadMagazineDetails(currentMagazineId); // Перезагружаем детали, чтобы обновить UI
+
+        } catch (error) {
+            console.error("Ошибка отписки от журнала:", error);
+            showActionMessage(error.message, 'danger');
+            button.disabled = false;
+            // Восстановить текст кнопки
+            if (userData && userData.role === 'admin') {
+                button.textContent = 'Отменить подписку (тест для админа)';
+            } else {
+                button.textContent = 'Отписаться';
+            }
+        }
+    }
+
+
+    // --- Отображение статей ---
+    function renderArticles(articles) {
+        articlesListEl.innerHTML = '';
+        if (!articles || articles.length === 0) {
+            articlesListEl.innerHTML = '<p class="text-text-muted dark:text-dark-text-muted">Для этого журнала пока нет статей.</p>';
+            return;
+        }
+        articles.forEach(article => {
+            const articleEl = document.createElement('div');
+            articleEl.className = 'article-item bg-card dark:bg-dark-card p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer';
+            articleEl.innerHTML = `
+                <h3 class="font-manrope text-xl font-semibold mb-2 text-text dark:text-dark-text">${article.title}</h3>
+                <p class="text-sm text-text-muted dark:text-dark-text-muted mb-3">Опубликовано: ${new Date(article.publicationDate).toLocaleDateString('ru-RU')}</p>
+                <p class="text-sm text-text-muted dark:text-dark-text-muted">${article.content.substring(0, 150)}...</p>
+            `;
+            articleEl.addEventListener('click', () => showArticleModal(article));
+            articlesListEl.appendChild(articleEl);
+        });
+    }
+
+    // --- Показ модального окна со статьей ---
+    function showArticleModal(article) {
+        modalArticleTitle.textContent = article.title;
+        modalArticleDate.textContent = new Date(article.publicationDate).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
+        modalArticleContent.innerHTML = article.content.replace(/\n/g, '<br>');
+        articleDetailModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeModalButton.addEventListener('click', () => {
+        articleDetailModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    });
+    articleDetailModal.addEventListener('click', (event) => {
+        if (event.target === articleDetailModal) {
+            articleDetailModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !articleDetailModal.classList.contains('hidden')) {
+            articleDetailModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    });
+
+    function showActionMessage(message, type = 'info') {
+        actionMessageEl.textContent = message;
+        actionMessageEl.className = 'mt-4 p-3 rounded-md text-sm';
+        if (type === 'success') actionMessageEl.classList.add('bg-success', 'dark:bg-dark-success', 'text-green-700', 'dark:text-green-200');
+        else if (type === 'danger') actionMessageEl.classList.add('bg-danger', 'dark:bg-dark-danger', 'text-red-700', 'dark:text-red-200');
+        else actionMessageEl.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-200');
+        actionMessageEl.classList.remove('hidden');
+    }
+    function hideActionMessage() {
+        actionMessageEl.classList.add('hidden');
+    }
+
+    // --- Инициализация при загрузке страницы ---
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavigation();
+        const urlParams = new URLSearchParams(window.location.search);
+        const magazineId = urlParams.get('id');
+
+        if (magazineId) {
+            currentMagazineId = parseInt(magazineId);
+            loadMagazineDetails(currentMagazineId);
+        } else {
+            loadingIndicator.classList.add('hidden');
+            errorMessageEl.classList.remove('hidden');
+            errorMessageEl.querySelector('p').textContent = 'ID журнала не указан.';
+            document.title = "Ошибка - e-magazine";
+        }
+    });
+</script>
+</body>
+</html>

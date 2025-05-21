@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ru" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель Администратора - e-magazine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        body, header, nav, footer, .card, .modal, .table, form {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        /* Стили для активной вкладки */
+        .tab-button.active {
+            border-color: #007BFF; /* primary */
+            color: #007BFF; /* primary */
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+        .dark .tab-button.active {
+            border-color: #38BDF8; /* dark.primary */
+            color: #38BDF8; /* dark.primary */
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+        /* Стили для модального окна подтверждения */
+        .confirm-modal {
+            /* Стили для модального окна, если нужны специфичные */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        manrope: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { DEFAULT: '#007BFF', hover: '#0056b3' },
+                        secondary: { DEFAULT: '#6c757d', hover: '#5a6268' },
+                        background: '#F9FAFB',
+                        card: '#FFFFFF',
+                        text: '#1F2937',
+                        'text-muted': '#6B7280',
+                        border: '#E5E7EB',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B',
+                        dark: {
+                            primary: { DEFAULT: '#38BDF8', hover: '#0EA5E9' },
+                            secondary: { DEFAULT: '#9CA3AF', hover: '#6B7280' },
+                            background: '#111827',
+                            card: '#1F2937',
+                            text: '#F3F4F6',
+                            'text-muted': '#9CA3AF',
+                            border: '#374151',
+                            success: '#34D399',
+                            danger: '#F87171',
+                            warning: '#FBBF24',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background dark:bg-dark-background text-text dark:text-dark-text antialiased min-h-screen grid grid-rows-[auto_1fr_auto]">
+
+
+<!-- Шапка сайта -->
+<header class="bg-card dark:bg-dark-card shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="font-manrope text-2xl font-bold text-primary dark:text-dark-primary">
+                    e-magazine
+                </a>
+            </div>
+            <nav id="main-nav" class="hidden md:flex space-x-6 items-center">
+                <a href="index.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Главная</a>
+                <a href="magazines.html" class="font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Журналы</a>
+            </nav>
+            <div class="flex items-center">
+                <button id="theme-toggle" type="button" class="ml-4 p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-dark-primary">
+                    <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Центральный круг (ядро солнца) -->
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+
+                        <!-- Лучи -->
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 2v2m0 16v2m10-10h-2M4 12H2
+           M17.66 6.34l-1.41 1.41M6.34 17.66l-1.41 1.41
+           M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 7.75" />
+                    </svg>
+
+                </button>
+                <div class="md:hidden ml-2">
+                    <button id="mobile-menu-button" type="button" class="p-2 rounded-md text-text-muted dark:text-dark-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Главная</a>
+            <a href="magazines.html" class="block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Журналы</a>
+        </div>
+    </div>
+</header>
+
+<!-- Основной контент -->
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="loading-indicator" class="text-center py-20">
+        <p class="text-xl text-text-muted dark:text-dark-text-muted">Проверка доступа...</p>
+    </div>
+
+    <div id="admin-panel-content" class="hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+            <h1 class="font-manrope text-3xl sm:text-4xl font-bold text-text dark:text-dark-text mb-4 sm:mb-0">
+                Панель Администратора
+            </h1>
+            <div id="admin-info" class="text-sm text-text-muted dark:text-dark-text-muted">
+                <!-- Информация об админе -->
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="mb-6 border-b border-border dark:border-dark-border">
+            <nav class="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
+                <button id="tab-magazines" data-tab="magazines" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm sm:text-base border-transparent text-text-muted dark:text-dark-text-muted hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 active">
+                    Управление журналами
+                </button>
+                <button id="tab-articles" data-tab="articles" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm sm:text-base border-transparent text-text-muted dark:text-dark-text-muted hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500">
+                    Управление статьями
+                </button>
+            </nav>
+        </div>
+
+        <!-- Содержимое вкладок -->
+        <div id="tab-content-magazines" class="tab-pane active">
+            <!-- Управление журналами -->
+            <section>
+                <h2 class="font-manrope text-2xl font-semibold mb-4">Журналы</h2>
+                <button id="show-add-magazine-form-btn" class="mb-6 px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">
+                    Добавить новый журнал
+                </button>
+
+                <!-- Форма добавления/редактирования журнала (скрыта по умолчанию) -->
+                <form id="magazine-form" class="hidden bg-card dark:bg-dark-card p-6 rounded-lg shadow-md mb-8 space-y-4">
+                    <h3 id="magazine-form-title" class="font-manrope text-xl font-semibold">Добавить журнал</h3>
+                    <input type="hidden" id="magazine-id">
+                    <div>
+                        <label for="magazine-title-input" class="block text-sm font-medium text-text dark:text-dark-text">Название*</label>
+                        <input type="text" id="magazine-title-input" required class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background">
+                    </div>
+                    <div>
+                        <label for="magazine-description-input" class="block text-sm font-medium text-text dark:text-dark-text">Описание</label>
+                        <textarea id="magazine-description-input" rows="3" class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background"></textarea>
+                    </div>
+                    <div>
+                        <label for="magazine-price-input" class="block text-sm font-medium text-text dark:text-dark-text">Цена (USD)*</label>
+                        <input type="number" id="magazine-price-input" step="0.01" min="0" required class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background">
+                    </div>
+                    <div>
+                        <label for="magazine-cover-input" class="block text-sm font-medium text-text dark:text-dark-text">URL обложки</label>
+                        <input type="url" id="magazine-cover-input" class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="submit" id="save-magazine-btn" class="px-4 py-2 text-sm font-medium text-white bg-success hover:opacity-80 rounded-md">Сохранить</button>
+                        <button type="button" id="cancel-magazine-form-btn" class="px-4 py-2 text-sm font-medium text-text-muted dark:text-dark-text-muted bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md">Отмена</button>
+                    </div>
+                    <div id="magazine-form-message" class="mt-2 text-sm"></div>
+                </form>
+
+                <!-- Список журналов -->
+                <div id="magazines-list-admin" class="overflow-x-auto bg-card dark:bg-dark-card shadow rounded-lg">
+                    <table class="min-w-full divide-y divide-border dark:divide-dark-border">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Название</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Цена</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody id="magazines-table-body" class="divide-y divide-border dark:divide-dark-border">
+                        <!-- Строки будут добавлены JS -->
+                        <tr><td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-text-muted dark:text-dark-text-muted text-center">Загрузка журналов...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-content-articles" class="tab-pane hidden">
+            <!-- Управление статьями -->
+            <section>
+                <h2 class="font-manrope text-2xl font-semibold mb-4">Статьи</h2>
+                <div class="mb-4">
+                    <label for="filter-magazine-select" class="block text-sm font-medium text-text dark:text-dark-text">Фильтр по журналу:</label>
+                    <select id="filter-magazine-select" class="mt-1 block w-full sm:w-1/2 md:w-1/3 pl-3 pr-10 py-2 text-base border-border dark:border-dark-border focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm rounded-md bg-background dark:bg-dark-background">
+                        <option value="">Все журналы</option>
+                        <!-- Опции журналов будут добавлены JS -->
+                    </select>
+                </div>
+                <button id="show-add-article-form-btn" class="mb-6 px-4 py-2 text-sm font-medium text-white bg-primary dark:bg-dark-primary hover:bg-primary-hover dark:hover:bg-dark-primary-hover rounded-md">
+                    Добавить новую статью
+                </button>
+
+                <!-- Форма добавления/редактирования статьи (скрыта по умолчанию) -->
+                <form id="article-form" class="hidden bg-card dark:bg-dark-card p-6 rounded-lg shadow-md mb-8 space-y-4">
+                    <h3 id="article-form-title" class="font-manrope text-xl font-semibold">Добавить статью</h3>
+                    <input type="hidden" id="article-id">
+                    <div>
+                        <label for="article-magazine-select" class="block text-sm font-medium text-text dark:text-dark-text">Журнал*</label>
+                        <select id="article-magazine-select" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-border dark:border-dark-border focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm rounded-md bg-background dark:bg-dark-background">
+                            <!-- Опции журналов -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="article-title-input" class="block text-sm font-medium text-text dark:text-dark-text">Заголовок статьи*</label>
+                        <input type="text" id="article-title-input" required class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background">
+                    </div>
+                    <div>
+                        <label for="article-content-input" class="block text-sm font-medium text-text dark:text-dark-text">Содержание*</label>
+                        <textarea id="article-content-input" rows="5" required class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background"></textarea>
+                    </div>
+                    <div>
+                        <label for="article-publication-date-input" class="block text-sm font-medium text-text dark:text-dark-text">Дата публикации*</label>
+                        <input type="datetime-local" id="article-publication-date-input" required class="mt-1 block w-full px-3 py-2 border border-border dark:border-dark-border rounded-md shadow-sm focus:outline-none focus:ring-primary dark:focus:ring-dark-primary focus:border-primary dark:focus:border-dark-primary sm:text-sm bg-background dark:bg-dark-background">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="submit" id="save-article-btn" class="px-4 py-2 text-sm font-medium text-white bg-success hover:opacity-80 rounded-md">Сохранить</button>
+                        <button type="button" id="cancel-article-form-btn" class="px-4 py-2 text-sm font-medium text-text-muted dark:text-dark-text-muted bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md">Отмена</button>
+                    </div>
+                    <div id="article-form-message" class="mt-2 text-sm"></div>
+                </form>
+
+                <!-- Список статей -->
+                <div id="articles-list-admin" class="overflow-x-auto bg-card dark:bg-dark-card shadow rounded-lg">
+                    <table class="min-w-full divide-y divide-border dark:divide-dark-border">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Заголовок</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Журнал</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Дата публ.</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-text-muted dark:text-dark-text-muted uppercase tracking-wider">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody id="articles-table-body" class="divide-y divide-border dark:divide-dark-border">
+                        <!-- Строки будут добавлены JS -->
+                        <tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-text-muted dark:text-dark-text-muted text-center">Загрузка статей...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="auth-required-message" class="hidden text-center py-20">
+        <p class="text-xl text-danger dark:text-dark-danger mb-4">Доступ запрещен.</p>
+        <p class="text-text-muted dark:text-dark-text-muted">Эта страница доступна только администраторам. Пожалуйста, <a href="login.html?redirect=admin.html" class="text-primary dark:text-dark-primary hover:underline">войдите</a> с учетной записью администратора.</p>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="confirm-delete-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[60] hidden">
+        <div class="confirm-modal bg-card dark:bg-dark-card p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 id="confirm-modal-title" class="font-manrope text-lg font-semibold mb-4">Подтвердите действие</h3>
+            <p id="confirm-modal-text" class="text-sm text-text-muted dark:text-dark-text-muted mb-6">Вы уверены, что хотите удалить этот элемент?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-delete-btn" class="px-4 py-2 text-sm font-medium text-text-muted dark:text-dark-text-muted bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md">Отмена</button>
+                <button id="confirm-delete-btn" class="px-4 py-2 text-sm font-medium text-white bg-danger hover:opacity-80 rounded-md">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer class="bg-gray-100 dark:bg-gray-800 border-t border-border dark:border-dark-border mt-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-text-muted dark:text-dark-text-muted">
+        <p>© <span id="current-year"></span> e-magazine. Все права защищены.</p>
+    </div>
+</footer>
+
+<script>
+    // --- Глобальные переменные и элементы ---
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const adminPanelContentEl = document.getElementById('admin-panel-content');
+    const authRequiredMessageEl = document.getElementById('auth-required-message');
+    const adminInfoEl = document.getElementById('admin-info');
+
+    const tabs = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    // Журналы
+    const showAddMagazineFormBtn = document.getElementById('show-add-magazine-form-btn');
+    const magazineForm = document.getElementById('magazine-form');
+    const magazineFormTitle = document.getElementById('magazine-form-title');
+    const magazineIdInput = document.getElementById('magazine-id');
+    const magazineTitleInput = document.getElementById('magazine-title-input');
+    const magazineDescriptionInput = document.getElementById('magazine-description-input');
+    const magazinePriceInput = document.getElementById('magazine-price-input');
+    const magazineCoverInput = document.getElementById('magazine-cover-input');
+    const saveMagazineBtn = document.getElementById('save-magazine-btn');
+    const cancelMagazineFormBtn = document.getElementById('cancel-magazine-form-btn');
+    const magazineFormMessage = document.getElementById('magazine-form-message');
+    const magazinesTableBody = document.getElementById('magazines-table-body');
+
+    // Статьи
+    const filterMagazineSelect = document.getElementById('filter-magazine-select');
+    const showAddArticleFormBtn = document.getElementById('show-add-article-form-btn');
+    const articleForm = document.getElementById('article-form');
+    const articleFormTitle = document.getElementById('article-form-title');
+    const articleIdInput = document.getElementById('article-id');
+    const articleMagazineSelect = document.getElementById('article-magazine-select');
+    const articleTitleInput = document.getElementById('article-title-input');
+    const articleContentInput = document.getElementById('article-content-input');
+    const articlePublicationDateInput = document.getElementById('article-publication-date-input');
+    const saveArticleBtn = document.getElementById('save-article-btn');
+    const cancelArticleFormBtn = document.getElementById('cancel-article-form-btn');
+    const articleFormMessage = document.getElementById('article-form-message');
+    const articlesTableBody = document.getElementById('articles-table-body');
+
+    // Модальное окно подтверждения
+    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+    const confirmModalTitle = document.getElementById('confirm-modal-title');
+    const confirmModalText = document.getElementById('confirm-modal-text');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    let deleteCallback = null;
+
+
+    let authToken = localStorage.getItem('authToken');
+    let userData = JSON.parse(localStorage.getItem('userData'));
+    let allMagazinesCache = []; // Кэш для списка журналов (для селектов)
+
+    // --- Общие функции (тема, меню, навигация, logout) ---
+    /* ... (код как на предыдущих страницах) ... */
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+    themeToggleBtn.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    function updateNavigation() {
+        const mainNav = document.getElementById('main-nav');
+        const mobileNavLinks = document.getElementById('mobile-nav-links');
+        const existingAuthLinks = mainNav.querySelectorAll('.auth-link');
+        existingAuthLinks.forEach(link => link.remove());
+        const existingMobileAuthLinks = mobileNavLinks.querySelectorAll('.auth-link-mobile');
+        existingMobileAuthLinks.forEach(link => link.remove());
+
+        if (authToken && userData) {
+            mainNav.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary">Профиль (${userData.username})</a>
+                    ${userData.role === 'admin' ? '<a href="admin.html" class="auth-link font-medium text-primary dark:text-dark-primary">Админ</a>' : ''}
+                    <button id="logoutButton" class="auth-link px-4 py-2 text-sm font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover rounded-md">Выход</button>
+                `);
+            mobileNavLinks.insertAdjacentHTML('beforeend', `
+                    <a href="profile.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-text-muted dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-primary hover:bg-gray-50 dark:hover:bg-gray-700">Профиль (${userData.username})</a>
+                    ${userData.role === 'admin' ? '<a href="admin.html" class="auth-link-mobile block px-3 py-2 rounded-md text-base font-medium text-primary dark:text-dark-primary bg-gray-100 dark:bg-gray-700">Админ</a>' : ''}
+                    <button id="logoutButtonMobile" class="auth-link-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-secondary dark:bg-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover">Выход</button>
+                `);
+            const logoutButton = document.getElementById('logoutButton');
+            if(logoutButton) logoutButton.addEventListener('click', logout);
+            const logoutButtonMobile = document.getElementById('logoutButtonMobile');
+            if(logoutButtonMobile) logoutButtonMobile.addEventListener('click', logout);
+        } else {
+            window.location.href = 'login.html?redirect=admin.html'; // Перенаправить, если не авторизован
+        }
+    }
+    function logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        authToken = null; userData = null;
+        window.location.href = 'index.html';
+    }
+
+    // --- Проверка прав администратора ---
+    function checkAdminAccess() {
+        if (!authToken || !userData || userData.role !== 'admin') {
+            loadingIndicator.classList.add('hidden');
+            authRequiredMessageEl.classList.remove('hidden');
+            adminPanelContentEl.classList.add('hidden');
+            return false;
+        }
+        loadingIndicator.classList.add('hidden');
+        adminPanelContentEl.classList.remove('hidden');
+        adminInfoEl.textContent = `Вы вошли как: ${userData.username} (Администратор)`;
+        return true;
+    }
+
+    // --- Логика вкладок ---
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            tabPanes.forEach(pane => {
+                if (pane.id === `tab-content-${targetTab}`) {
+                    pane.classList.remove('hidden');
+                    pane.classList.add('active'); // 'active' здесь для логики, не для стилей Tailwind
+                } else {
+                    pane.classList.add('hidden');
+                    pane.classList.remove('active');
+                }
+            });
+            // Загрузка данных для активной вкладки, если еще не загружены
+            if (targetTab === 'magazines' && magazinesTableBody.querySelector('td[colspan="4"]')) loadAdminMagazines();
+            if (targetTab === 'articles' && articlesTableBody.querySelector('td[colspan="5"]')) loadAdminArticles();
+        });
+    });
+
+    // --- Управление журналами ---
+    async function loadAdminMagazines() {
+        magazinesTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center">Загрузка журналов...</td></tr>';
+        try {
+            const response = await fetch('/api/magazines'); // Обычный эндпоинт, админ видит все
+            if (!response.ok) throw new Error('Не удалось загрузить журналы');
+            allMagazinesCache = await response.json();
+
+            magazinesTableBody.innerHTML = '';
+            if (allMagazinesCache.length === 0) {
+                magazinesTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center">Журналы не найдены.</td></tr>';
+            } else {
+                allMagazinesCache.forEach(mag => {
+                    const row = magazinesTableBody.insertRow();
+                    row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text dark:text-dark-text">${mag.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text dark:text-dark-text">${mag.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text dark:text-dark-text">${parseFloat(mag.price).toFixed(2)}$</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button onclick="editMagazine(${mag.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200">Ред.</button>
+                                <button onclick="confirmDelete('magazine', ${mag.id}, '${mag.title}')" class="text-danger dark:text-dark-danger hover:opacity-70">Удал.</button>
+                            </td>
+                        `;
+                });
+            }
+            populateMagazineSelects(); // Обновить селекты для статей
+        } catch (error) {
+            console.error(error);
+            magazinesTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-danger dark:text-dark-danger">${error.message}</td></tr>`;
+        }
+    }
+
+    showAddMagazineFormBtn.addEventListener('click', () => {
+        magazineForm.classList.remove('hidden');
+        magazineFormTitle.textContent = 'Добавить журнал';
+        magazineForm.reset();
+        magazineIdInput.value = '';
+        magazineFormMessage.textContent = '';
+        magazineFormMessage.className = 'mt-2 text-sm';
+    });
+    cancelMagazineFormBtn.addEventListener('click', () => {
+        magazineForm.classList.add('hidden');
+    });
+
+    magazineForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = magazineIdInput.value;
+        const data = {
+            title: magazineTitleInput.value,
+            description: magazineDescriptionInput.value,
+            price: parseFloat(magazinePriceInput.value),
+            coverImage: magazineCoverInput.value
+        };
+        if (!data.title || isNaN(data.price)) {
+            showFormMessage(magazineFormMessage, 'Название и цена обязательны.', 'danger');
+            return;
+        }
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/admin/magazines/${id}` : '/api/admin/magazines';
+        saveMagazineBtn.disabled = true; saveMagazineBtn.textContent = 'Сохранение...';
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Ошибка сохранения журнала');
+
+            showFormMessage(magazineFormMessage, `Журнал успешно ${id ? 'обновлен' : 'добавлен'}!`, 'success');
+            magazineForm.reset();
+            magazineForm.classList.add('hidden');
+            loadAdminMagazines(); // Обновить список
+        } catch (error) {
+            showFormMessage(magazineFormMessage, error.message, 'danger');
+        } finally {
+            saveMagazineBtn.disabled = false; saveMagazineBtn.textContent = 'Сохранить';
+        }
+    });
+
+    window.editMagazine = (id) => { // Делаем функцию глобальной для inline onclick
+        const magazine = allMagazinesCache.find(m => m.id === id);
+        if (!magazine) return;
+        magazineForm.classList.remove('hidden');
+        magazineFormTitle.textContent = 'Редактировать журнал';
+        magazineIdInput.value = magazine.id;
+        magazineTitleInput.value = magazine.title;
+        magazineDescriptionInput.value = magazine.description || '';
+        magazinePriceInput.value = magazine.price;
+        magazineCoverInput.value = magazine.coverImage || '';
+        magazineFormMessage.textContent = '';
+        magazineFormMessage.className = 'mt-2 text-sm';
+        window.scrollTo({ top: magazineForm.offsetTop - 20, behavior: 'smooth' });
+    };
+
+    // --- Управление статьями ---
+    function populateMagazineSelects() {
+        const selects = [filterMagazineSelect, articleMagazineSelect];
+        selects.forEach(select => {
+            // Сохраняем первую опцию "Все журналы" или "Выберите журнал", если она есть
+            const firstOptionValue = select.options.length > 0 ? select.options[0].value : "";
+            const firstOptionText = select.options.length > 0 ? select.options[0].text : (select === filterMagazineSelect ? "Все журналы" : "Выберите журнал*");
+
+            select.innerHTML = `<option value="${firstOptionValue}">${firstOptionText}</option>`; // Очищаем, кроме первой
+            allMagazinesCache.forEach(mag => {
+                const option = document.createElement('option');
+                option.value = mag.id;
+                option.textContent = mag.title;
+                select.appendChild(option);
+            });
+        });
+    }
+
+    filterMagazineSelect.addEventListener('change', () => loadAdminArticles());
+
+    async function loadAdminArticles() {
+        const selectedMagazineId = filterMagazineSelect.value;
+        articlesTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">Загрузка статей...</td></tr>';
+
+        // Для загрузки всех статей админом, нужен специальный эндпоинт или параметр
+        // Используем эндпоинт, который мы уже создали: GET /api/admin/magazines/:magazineId/articles
+        // Если журнал не выбран, нужно либо показать все статьи (потребует нового эндпоинта /api/admin/articles/all)
+        // Либо не показывать ничего. Пока сделаем так, что если журнал не выбран, статьи не грузятся.
+        // Или, лучше, если журнал не выбран, грузим все статьи (если такой эндпоинт есть).
+        // Для простоты, если журнал не выбран, мы не будем загружать статьи, а попросим выбрать.
+        // Либо, если есть эндпоинт для ВСЕХ статей, то используем его.
+        // Допустим, у нас есть /api/admin/articles/all для всех статей.
+        // И /api/admin/magazines/:magazineId/articles для статей конкретного журнала.
+
+        let url = '/api/admin/articles'; // Предполагаемый эндпоинт для всех статей
+        if (selectedMagazineId) {
+            url = `/api/admin/magazines/${selectedMagazineId}/articles`;
+        } else {
+            // Если нет эндпоинта для всех статей, то можно показать сообщение.
+            // articlesTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">Выберите журнал для отображения статей.</td></tr>';
+            // return;
+            // Или, если мы хотим грузить все статьи, если ничего не выбрано, то нужен такой эндпоинт.
+            // Для примера, будем считать, что /api/admin/articles/all существует.
+            // Если его нет, то нужно будет изменить логику.
+        }
+
+
+        try {
+            const response = await fetch(url, { headers: { 'Authorization': `Bearer ${authToken}` } });
+            if (!response.ok) throw new Error('Не удалось загрузить статьи');
+            const articles = await response.json();
+
+            articlesTableBody.innerHTML = '';
+            if (articles.length === 0) {
+                articlesTableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center">Статьи ${selectedMagazineId ? 'для этого журнала' : ''} не найдены.</td></tr>`;
+            } else {
+                articles.forEach(art => {
+                    const magazineTitle = allMagazinesCache.find(m => m.id === art.magazineId)?.title || 'Неизвестный журнал';
+                    const row = articlesTableBody.insertRow();
+                    row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text dark:text-dark-text">${art.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text dark:text-dark-text max-w-xs truncate" title="${art.title}">${art.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text dark:text-dark-text">${magazineTitle}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text dark:text-dark-text">${new Date(art.publicationDate).toLocaleDateString('ru-RU')}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button onclick="editArticle(${art.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200">Ред.</button>
+                                <button onclick="confirmDelete('article', ${art.id}, '${art.title.replace(/'/g, "\\'")}')" class="text-danger dark:text-dark-danger hover:opacity-70">Удал.</button>
+                            </td>
+                        `;
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            articlesTableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-danger dark:text-dark-danger">${error.message}</td></tr>`;
+        }
+    }
+
+    showAddArticleFormBtn.addEventListener('click', () => {
+        articleForm.classList.remove('hidden');
+        articleFormTitle.textContent = 'Добавить статью';
+        articleForm.reset();
+        articleIdInput.value = '';
+        articleFormMessage.textContent = '';
+        articleFormMessage.className = 'mt-2 text-sm';
+        // Установить текущую дату и время по умолчанию
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // Учитываем часовой пояс
+        articlePublicationDateInput.value = now.toISOString().slice(0,16);
+    });
+    cancelArticleFormBtn.addEventListener('click', () => {
+        articleForm.classList.add('hidden');
+    });
+
+    articleForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = articleIdInput.value;
+        const data = {
+            magazineId: parseInt(articleMagazineSelect.value),
+            title: articleTitleInput.value,
+            content: articleContentInput.value,
+            publicationDate: new Date(articlePublicationDateInput.value).toISOString() // Отправляем в ISO
+        };
+
+        if (!data.magazineId || !data.title || !data.content || !data.publicationDate) {
+            showFormMessage(articleFormMessage, 'Все поля со звездочкой обязательны.', 'danger');
+            return;
+        }
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/admin/articles/${id}` : '/api/admin/articles';
+        saveArticleBtn.disabled = true; saveArticleBtn.textContent = 'Сохранение...';
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Ошибка сохранения статьи');
+
+            showFormMessage(articleFormMessage, `Статья успешно ${id ? 'обновлена' : 'добавлена'}!`, 'success');
+            articleForm.reset();
+            articleForm.classList.add('hidden');
+            loadAdminArticles(); // Обновить список
+        } catch (error) {
+            showFormMessage(articleFormMessage, error.message, 'danger');
+        } finally {
+            saveArticleBtn.disabled = false; saveArticleBtn.textContent = 'Сохранить';
+        }
+    });
+
+    window.editArticle = async (id) => { // Делаем функцию глобальной
+        // Для редактирования статьи, нам нужны ее полные данные, включая content
+        // API /api/admin/magazines/:magazineId/articles может не возвращать content для краткости
+        // Поэтому, возможно, нужен отдельный GET /api/admin/articles/:id для получения полной статьи
+        // Предположим, что loadAdminArticles уже загрузил все нужные данные, или мы делаем доп. запрос
+        // Для простоты, сейчас будем считать, что данные уже есть или мы их получим из списка.
+        // В идеале, нужен отдельный запрос на получение полной статьи для редактирования.
+
+        // Попробуем найти статью в текущем отображаемом списке (если он есть)
+        // Это не очень надежно, лучше делать отдельный запрос.
+        // const article = articlesCache.find(a => a.id === id); // Нужен кэш статей
+        // Пока что, для примера, сделаем запрос:
+        try {
+            const response = await fetch(`/api/admin/articles/${id}`, { // Используем публичный эндпоинт для получения статьи
+                headers: { 'Authorization': `Bearer ${authToken}` } // Админ должен иметь доступ
+            });
+            if (!response.ok) throw new Error('Не удалось загрузить данные статьи для редактирования.');
+            const article = await response.json();
+
+            if (!article) return;
+
+            articleForm.classList.remove('hidden');
+            articleFormTitle.textContent = 'Редактировать статью';
+            articleIdInput.value = article.id;
+            articleMagazineSelect.value = article.magazineId;
+            articleTitleInput.value = article.title;
+            articleContentInput.value = article.content;
+            // Форматирование даты для datetime-local
+            const pubDate = new Date(article.publicationDate);
+            pubDate.setMinutes(pubDate.getMinutes() - pubDate.getTimezoneOffset());
+            articlePublicationDateInput.value = pubDate.toISOString().slice(0,16);
+
+            articleFormMessage.textContent = '';
+            articleFormMessage.className = 'mt-2 text-sm';
+            window.scrollTo({ top: articleForm.offsetTop - 20, behavior: 'smooth' });
+        } catch (error) {
+            alert(`Ошибка загрузки статьи для редактирования: ${error.message}`);
+        }
+    };
+
+    // --- Удаление (журналы и статьи) ---
+    window.confirmDelete = (type, id, name) => { // type: 'magazine' or 'article'
+        confirmModalTitle.textContent = `Удалить ${type === 'magazine' ? 'журнал' : 'статью'}`;
+        confirmModalText.textContent = `Вы уверены, что хотите удалить "${name}" (ID: ${id})? Это действие необратимо.`;
+        confirmDeleteModal.classList.remove('hidden');
+
+        deleteCallback = async () => {
+            const url = `/api/admin/${type === 'magazine' ? 'magazines' : 'articles'}/${id}`;
+            confirmDeleteBtn.disabled = true; confirmDeleteBtn.textContent = 'Удаление...';
+            try {
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || `Ошибка удаления ${type === 'magazine' ? 'журнала' : 'статьи'}`);
+
+                // alert(`${type === 'magazine' ? 'Журнал' : 'Статья'} "${name}" успешно удален(а).`);
+                if (type === 'magazine') loadAdminMagazines();
+                else loadAdminArticles();
+            } catch (error) {
+                alert(`Ошибка: ${error.message}`);
+            } finally {
+                confirmDeleteModal.classList.add('hidden');
+                confirmDeleteBtn.disabled = false; confirmDeleteBtn.textContent = 'Удалить';
+                deleteCallback = null;
+            }
+        };
+    };
+
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (deleteCallback) deleteCallback();
+    });
+    cancelDeleteBtn.addEventListener('click', () => {
+        confirmDeleteModal.classList.add('hidden');
+        deleteCallback = null;
+    });
+    // Закрытие модалки по Esc
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !confirmDeleteModal.classList.contains('hidden')) {
+            confirmDeleteModal.classList.add('hidden');
+            deleteCallback = null;
+        }
+    });
+
+
+    function showFormMessage(element, message, type = 'info') {
+        element.textContent = message;
+        element.className = 'mt-2 text-sm'; // Сброс
+        if (type === 'success') element.classList.add('text-success');
+        else if (type === 'danger') element.classList.add('text-danger');
+        else element.classList.add('text-blue-600', 'dark:text-blue-400');
+    }
+
+    // --- Инициализация ---
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavigation();
+        if (checkAdminAccess()) {
+            loadAdminMagazines(); // Загружаем журналы по умолчанию (для селектов и первой вкладки)
+            // Статьи загрузятся при переключении на вкладку или изменении фильтра
+        }
+    });
+</script>
+</body>
+</html>
