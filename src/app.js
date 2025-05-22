@@ -13,27 +13,22 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-// Middlewares
 app.use(cors()); // Разрешить CORS-запросы
 app.use(express.json()); // Для парсинга application/json
 app.use(express.urlencoded({ extended: true })); // Для парсинга application/x-www-form-urlencoded
 
-// Статика (HTML-страницы)
 app.use(express.static(path.join(__dirname, '../public')));
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/magazines', magazineRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Пример корневого маршрута для API
 app.get('/api', (req, res) => {
     res.json({ message: 'Welcome to E-magazine API!' });
 });
 
-// Обработчик ошибок (должен быть последним мидлвэром)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

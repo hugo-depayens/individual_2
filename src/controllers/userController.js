@@ -1,9 +1,7 @@
 const Subscription = require('../models/Subscription');
-const Article = require('../models/Article'); // Понадобится для доступа к выпускам
+const Article = require('../models/Article');
 
 exports.getUserProfile = (req, res) => {
-    // req.user уже содержит id, username, email, role из токена
-    // Можно добавить больше информации, если нужно, запросив из User.findById
     res.json({ user: req.user });
 };
 
@@ -29,7 +27,6 @@ exports.unsubscribeMagazine = (req, res) => {
     });
 }
 
-// Доступ к статьям конкретного журнала, на который есть активная подписка
 exports.getSubscribedMagazineArticles = (req, res) => {
     const userId = req.user.id;
     const magazineId = parseInt(req.params.magazineId, 10);
